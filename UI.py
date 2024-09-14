@@ -43,6 +43,30 @@ class AddIncomeWindow(QMainWindow):
         submit_button = QPushButton("Add Income")
         submit_button.clicked.connect(self.add_income)
         layout.addWidget(submit_button)
+        
+        view_button = QPushButton("View Income sources")
+        view_button.clicked.connect(self.load_income)
+        layout.addWidget(view_button)
+        
+        self.income_display = QTextEdit()
+        self.income_display.setReadOnly(True)
+        layout.addWidget(self.income_display)
+        
+        amount_label = QLabel("New Amount:")
+        layout.addWidget(amount_label)
+        self.amount_input = QLineEdit()
+        self.amount_input.setPlaceholderText("Enter new amount")
+        layout.addWidget(self.amount_input)
+
+        source_label = QLabel("Source of Income:")
+        layout.addWidget(source_label)
+        self.source_input = QComboBox()
+        self.source_input.addItems(["Salary", "Business", "Investments", "Other"])
+        layout.addWidget(self.source_input)
+
+        update_button = QPushButton("Update Income")
+        update_button.clicked.connect(self.update_income)
+        layout.addWidget(update_button)
 
         # Return to Home button
         return_button = QPushButton("Return to Home")
@@ -72,6 +96,45 @@ class AddIncomeWindow(QMainWindow):
             self.date_input.setDate(QDate.currentDate())
         except Exception as e:
             QMessageBox.critical(self, "Database Error", str(e))
+    
+    def load_income(self):
+        try:
+            # Fetch income records for the logged-in user
+            incomes = self.addincome.fetch_by_user_id(self.user_id)
+
+            if not incomes:
+                QMessageBox.information(self, "No Data", "No income records found for this user.")
+                self.income_display.clear()
+                return
+
+            # Display the incomes in the text area
+            self.income_display.clear()
+            self.income_display.append(f"{'ID':<10}{'Amount':<15}{'Source':<20}{'Date':<15}")
+            self.income_display.append("="*60)
+            for income in incomes:
+                self.income_display.append(f"{income[0]:<10}{income[1]:<15}{income[2]:<20}{income[3]:<15}")
+        
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
+    def update_income(self):
+        source = self.source_input.currentText()  # The income category (e.g., "Salary")
+        new_amount = self.amount_input.text()      # The new amount to update
+
+        if not new_amount:
+            QMessageBox.warning(self, "Input Error", "Please enter a new amount.")
+            return
+
+        try:
+            # Update income using user_id, source, and the new amount
+            self.addincome.update_income(self.user_id, source, new_amount)
+            QMessageBox.information(self, "Success", f"Income for {source} updated successfully!")
+            
+            # Optionally, reload income data to reflect the updated values
+            self.load_income()
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
 
     def return_to_welcome(self):
         self.Main_window = WelcomeWindow(self.username)

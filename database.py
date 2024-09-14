@@ -111,16 +111,63 @@ class AddIncome:
         self.db_connection = db_connection or DatabaseConnection()
 
     def insert(self, user_id, amount, source, date):
-        # Insert a new income into the table
+        # Insert or update income based on whether the source exists for the user
+        try:
+            # Check if the source already exists for the given user_id
+            self.db_connection.cur.execute('''
+                SELECT id FROM income WHERE user_id = ? AND source = ?
+            ''', (user_id, source))
+            
+            existing_record = self.db_connection.cur.fetchone()
+
+            if existing_record:
+                # If record exists, perform an update
+                self.db_connection.cur.execute('''
+                    UPDATE income 
+                    SET amount = ?, date = ?
+                    WHERE user_id = ? AND source = ?
+                ''', (amount, date, user_id, source))
+                print(f"Updated existing income record for {source} with new amount and date.")
+            else:
+                # If no record exists, perform an insert
+                self.db_connection.cur.execute('''
+                    INSERT INTO income (user_id, amount, source, date)
+                    VALUES (?, ?, ?, ?)
+                ''', (user_id, amount, source, date))
+                print(f"Inserted new income record for {source}.")
+            
+            self.db_connection.conn.commit()
+
+        except sqlite3.OperationalError as e:
+            print(f"Error while inserting/updating income: {e}")
+
+            
+    
+    def fetch_by_user_id(self, user_id):
+        # Fetch all income records for the given user_id
         try:
             self.db_connection.cur.execute('''
-                INSERT INTO income (user_id, amount, source, date)
-                VALUES (?, ?, ?, ?)
-            ''', (user_id, amount, source, date))
-            self.db_connection.conn.commit()
-            
+                SELECT id, amount, source, date FROM income WHERE user_id = ?
+            ''', (user_id,))
+            return self.db_connection.cur.fetchall()
         except sqlite3.OperationalError as e:
-            print(f"Error while inserting income: {e}")
-            
+            print(f"Error while fetching income: {e}")
+            return []
+        
+    def update_income(self, user_id, source, new_amount):
+        # Update the income amount for the specified user_id and source (category)
+        try:
+            self.db_connection.cur.execute('''
+                UPDATE income 
+                SET amount = ?
+                WHERE user_id = ? AND source = ?
+            ''', (new_amount, user_id, source))
+            self.db_connection.conn.commit()
+            if self.db_connection.cur.rowcount > 0:
+                print("Income updated successfully")
+            else:
+                print("No matching record found to update")
+        except sqlite3.OperationalError as e:
+            print(f"Error while updating income: {e}")       
     
     
