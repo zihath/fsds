@@ -97,8 +97,7 @@ class AddExpense:
             (user_id, start_date, end_date)
         )
         return self.db_connection.cur.fetchall()
-
-
+    
     def delete(self, expense_id):
         self.db_connection.cur.execute(
             "DELETE FROM expenses WHERE id = ?",

@@ -2,9 +2,12 @@ import sys
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow,QStackedWidget,QSplitter,QTextEdit, QTableWidgetItem,QTableWidget,QDialog, QPushButton, QMessageBox, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QWidget, QComboBox, QDateEdit
 )
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, QDate
 from database import User, AddExpense, DatabaseConnection , AddIncome
+import matplotlib.pyplot as plt
 
 class AddIncomeWindow(QMainWindow):
     def __init__(self, user_id, username):
@@ -576,10 +579,9 @@ class WelcomeWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.expense_window)
 
     def display_analyze(self):
-        analyze_widget = QLabel("Analyze Data (To be implemented)")
-        analyze_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.stacked_widget.addWidget(analyze_widget)
-        self.stacked_widget.setCurrentWidget(analyze_widget)
+        self.analyze_window = ExpensePlotWindow(self.user_id)
+        self.stacked_widget.addWidget(self.analyze_window)
+        self.stacked_widget.setCurrentWidget(self.analyze_window)
 
     def display_add_income(self):
         self.income_window = AddIncomeWindow(self.user_id, self.username)
@@ -602,6 +604,101 @@ class WelcomeWindow(QMainWindow):
 
         self.sidebar_visible = not self.sidebar_visible
 
+class ExpensePlotWindow(QWidget):
+    def __init__(self, user_id):
+        super().__init__()
+        self.user_id = user_id
+        self.setWindowTitle("Expense Plot")
+        self.setGeometry(100, 100, 800, 600)
+        self.addexpense = AddExpense()
+
+        # Layout setup
+        layout = QVBoxLayout()
+
+        # Start Date input
+        self.start_date_label = QLabel("Start Date:")
+        self.start_date_input = QDateEdit()
+        self.start_date_input.setDate(QDate.currentDate().addMonths(-1))  # Default to 1 month ago
+        layout.addWidget(self.start_date_label)
+        layout.addWidget(self.start_date_input)
+
+        # End Date input
+        self.end_date_label = QLabel("End Date:")
+        self.end_date_input = QDateEdit()
+        self.end_date_input.setDate(QDate.currentDate())  # Default to today
+        layout.addWidget(self.end_date_label)
+        layout.addWidget(self.end_date_input)
+
+        # Button to fetch and plot the data
+        self.plot_button = QPushButton("Plot Expenses")
+        self.plot_button.clicked.connect(self.plot_expenses)
+        layout.addWidget(self.plot_button)
+
+        # Matplotlib canvas for displaying plots
+        self.canvas = FigureCanvas(Figure(figsize=(5, 4)))
+        layout.addWidget(self.canvas)
+        self.ax = self.canvas.figure.add_subplot(111)
+
+        # Set the layout for the window
+        self.setLayout(layout)
+
+    def plot_expenses(self):
+        """Fetch data and generate plots."""
+        # Get the date range from the user
+        start_date = self.start_date_input.date().toString('yyyy-MM-dd')
+        end_date = self.end_date_input.date().toString('yyyy-MM-dd')
+
+        try:
+            # Fetch data from the database
+            data = self.addexpense.fetch_between_date(self.user_id, start_date, end_date)
+
+            if not data:
+                QMessageBox.warning(self, "No Data", "No expenses found in the given date range.")
+                return
+
+            # Prepare the data for plotting
+            categories = {}
+            for row in data:
+                category = row[4]  # Assuming the 4th column is category
+                amount = float(row[1])  # Assuming the 1st column is amount
+                if category in categories:
+                    categories[category] += amount
+                else:
+                    categories[category] = amount
+
+            # If no expenses found, show a message
+            if not categories:
+                QMessageBox.information(self, "No Data", "No expenses to display.")
+                return
+
+            # Generate plots
+            self.generate_plots(categories)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred while fetching the data: {str(e)}")
+
+    def generate_plots(self, categories):
+        """Generate and display the pie plot and bar plot inside the window."""
+        labels = list(categories.keys())
+        sizes = list(categories.values())
+
+        # Clear any previous plots
+        self.ax.clear()
+
+        # Create pie plot
+        self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors)
+        self.ax.set_title('Expenses by Category (Pie Chart)')
+        self.canvas.draw()  # Update the canvas to reflect the new plot
+
+        # You can toggle between pie plot and bar plot, or create separate tabs if needed
+        # Uncomment below if you want to display a bar chart
+        # self.ax.bar(labels, sizes, color=plt.cm.Paired.colors)
+        # self.ax.set_title('Expenses by Category (Bar Chart)')
+        # self.ax.set_xlabel('Category')
+        # self.ax.set_ylabel('Amount Spent')
+        # self.canvas.draw()  # Update the canvas to reflect the new plot
+
+        
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
