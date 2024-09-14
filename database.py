@@ -86,7 +86,7 @@ class AddExpense:
     
     def fetch_by_date(self, user_id, date):
         self.db_connection.cur.execute(
-            "SELECT date, amount, description, category FROM expenses WHERE user_id = ? AND date = ?",
+            "SELECT id, amount, description, date, category FROM expenses WHERE user_id = ? AND date = ?",
             (user_id, date)
         )
         return self.db_connection.cur.fetchall()
