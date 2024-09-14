@@ -686,17 +686,17 @@ class ExpensePlotWindow(QWidget):
         self.ax.clear()
 
         # Create pie plot
-        self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors)
-        self.ax.set_title('Expenses by Category (Pie Chart)')
-        self.canvas.draw()  # Update the canvas to reflect the new plot
+        # self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors)
+        # self.ax.set_title('Expenses by Category (Pie Chart)')
+        # self.canvas.draw()  # Update the canvas to reflect the new plot
 
         # You can toggle between pie plot and bar plot, or create separate tabs if needed
         # Uncomment below if you want to display a bar chart
-        # self.ax.bar(labels, sizes, color=plt.cm.Paired.colors)
-        # self.ax.set_title('Expenses by Category (Bar Chart)')
-        # self.ax.set_xlabel('Category')
-        # self.ax.set_ylabel('Amount Spent')
-        # self.canvas.draw()  # Update the canvas to reflect the new plot
+        self.ax.bar(labels, sizes, color=plt.cm.Paired.colors)
+        self.ax.set_title('Expenses by Category (Bar Chart)')
+        self.ax.set_xlabel('Category')
+        self.ax.set_ylabel('Amount Spent')
+        self.canvas.draw()  # Update the canvas to reflect the new plot
 
         
 class MainWindow(QMainWindow):
