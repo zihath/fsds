@@ -12,7 +12,7 @@ class DatabaseConnection:
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+   git             password TEXT NOT NULL
             )
         ''')
 
