@@ -24,11 +24,15 @@ class AddIncomeWindow(QMainWindow):
         # Add Income button
         self.add_income_button = QPushButton("Add Income")
         self.add_income_button.clicked.connect(self.show_add_income_form)
+        self.add_income_button.setFont(QFont("Verdana", 12))
+        self.add_income_button.setStyleSheet("background-color: #4CAF50; color: white; padding: 10px;")  # Green
         button_layout.addWidget(self.add_income_button)
 
         # Update Income button
         self.update_income_button = QPushButton("Update Income")
         self.update_income_button.clicked.connect(self.show_update_income_form)
+        self.update_income_button.setFont(QFont("Verdana", 12))
+        self.update_income_button.setStyleSheet("background-color: #2196F3; color: white; padding: 10px;")  # Blue
         button_layout.addWidget(self.update_income_button)
 
         layout.addLayout(button_layout)
@@ -38,29 +42,39 @@ class AddIncomeWindow(QMainWindow):
         add_income_layout = QVBoxLayout()
 
         amount_label = QLabel("Amount:")
+        amount_label.setFont(QFont("Open Sans", 14, QFont.Weight.Bold))
+        amount_label.setStyleSheet("color: #333333;")  # Dark Gray
         add_income_layout.addWidget(amount_label)
         self.amount_input = QLineEdit()
         self.amount_input.setPlaceholderText("Enter amount")
+        self.amount_input.setStyleSheet("border: 1px solid #4CAF50; padding: 5px;")  # Green border
         add_income_layout.addWidget(self.amount_input)
 
         source_label = QLabel("Source of Income:")
+        source_label.setFont(QFont("Open Sans", 14, QFont.Weight.Bold))
+        source_label.setStyleSheet("color: #333333;")  # Dark Gray
         add_income_layout.addWidget(source_label)
         self.source_input = QComboBox()
         self.source_input.addItems(["Salary", "Business", "Investments", "Other"])
+        self.source_input.setStyleSheet("border: 1px solid #4CAF50; padding: 5px;")  # Green border
         add_income_layout.addWidget(self.source_input)
 
         date_label = QLabel("Date:")
+        date_label.setFont(QFont("Open Sans", 14, QFont.Weight.Bold))
+        date_label.setStyleSheet("color: #333333;")  # Dark Gray
+        add_income_layout.addWidget(date_label)
         self.date_input = QDateEdit()
         self.date_input.setDate(QDate.currentDate())
-        add_income_layout.addWidget(date_label)
         add_income_layout.addWidget(self.date_input)
 
         submit_button = QPushButton("Submit Income")
         submit_button.clicked.connect(self.add_income)
+        submit_button.setFont(QFont("Verdana", 12))
+        submit_button.setStyleSheet("background-color: #4CAF50; color: white; padding: 10px;") # Green
         add_income_layout.addWidget(submit_button)
 
         self.add_income_form.setLayout(add_income_layout)
-        self.add_income_form.setVisible(True)  # Initially hidden
+        self.add_income_form.setVisible(True)  # Initially visible
         layout.addWidget(self.add_income_form)
 
         # Update Income Form (Initially hidden)
@@ -68,19 +82,27 @@ class AddIncomeWindow(QMainWindow):
         update_income_layout = QVBoxLayout()
 
         update_amount_label = QLabel("New Amount:")
+        update_amount_label.setFont(QFont("Open Sans", 14, QFont.Weight.Bold))
+        update_amount_label.setStyleSheet("color: #333333;")  # Dark Gray
         update_income_layout.addWidget(update_amount_label)
         self.update_amount_input = QLineEdit()
         self.update_amount_input.setPlaceholderText("Enter new amount")
+        self.update_amount_input.setStyleSheet("border: 1px solid #2196F3; padding: 5px;")  # Blue border
         update_income_layout.addWidget(self.update_amount_input)
 
         update_source_label = QLabel("New Source of Income:")
+        update_source_label.setFont(QFont("Open Sans", 14, QFont.Weight.Bold))
+        update_source_label.setStyleSheet("color: #333333;")  # Dark Gray
         update_income_layout.addWidget(update_source_label)
         self.update_source_input = QComboBox()
         self.update_source_input.addItems(["Salary", "Business", "Investments", "Other"])
+        self.update_source_input.setStyleSheet("border: 1px solid #2196F3; padding: 5px;")  # Blue border
         update_income_layout.addWidget(self.update_source_input)
 
         update_button = QPushButton("Update Income")
         update_button.clicked.connect(self.update_income)
+        update_button.setFont(QFont("Verdana", 12))
+        update_button.setStyleSheet("background-color: #2196F3; color: white; padding: 10px;") #blue
         update_income_layout.addWidget(update_button)
 
         self.update_income_form.setLayout(update_income_layout)
@@ -150,22 +172,65 @@ class History(QMainWindow):
         
         layout = QVBoxLayout()
 
-        # Start Date
+        # Start Date label
         start_date_label = QLabel("Start Date:")
+        start_date_label.setFont(QFont('Open Sans', 14, QFont.Weight.Bold))
+        start_date_label.setStyleSheet("color: #2C3E50;")
         layout.addWidget(start_date_label)
+
+        # Start Date input
         self.start_date_input = QDateEdit()
         self.start_date_input.setDate(QDate.currentDate())
+        self.start_date_input.setStyleSheet("""
+            QDateEdit {
+                padding: 10px;
+                border: 1px solid #BDC3C7;
+                border-radius: 5px;
+                font-size: 14px;
+                background-color: #FFFFFF;
+                color: #2C3E50;
+            }
+        """)
         layout.addWidget(self.start_date_input)
 
-        # End Date
+        # End Date label
         end_date_label = QLabel("End Date:")
+        end_date_label.setFont(QFont('Open Sans', 14, QFont.Weight.Bold))
+        end_date_label.setStyleSheet("color: #2C3E50;")
         layout.addWidget(end_date_label)
+
+        # End Date input
         self.end_date_input = QDateEdit()
         self.end_date_input.setDate(QDate.currentDate())
+        self.end_date_input.setStyleSheet("""
+            QDateEdit {
+                padding: 10px;
+                border: 1px solid #BDC3C7;
+                border-radius: 5px;
+                font-size: 14px;
+                background-color: #FFFFFF;
+                color: #2C3E50;
+            }
+        """)
         layout.addWidget(self.end_date_input)
 
         # Show Transactions button
         show_button = QPushButton("Show Transactions")
+        show_button.setFont(QFont('Montserrat', 14, QFont.Weight.Medium))
+        show_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        show_button.setStyleSheet("""
+            QPushButton {
+                padding: 10px;
+                background-color: #1ABC9C;
+                color: white;
+                border-radius: 8px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+            QPushButton:hover {
+                background-color: #16A085;
+            }
+        """)
         show_button.clicked.connect(self.load_expenses)
         layout.addWidget(show_button)
         
@@ -174,8 +239,36 @@ class History(QMainWindow):
         self.expense_display.setReadOnly(True)
         layout.addWidget(self.expense_display)
 
+         # Table for displaying expenses
+        self.expense_table = QTableWidget()
+        self.expense_table.setColumnCount(5)  # Number of columns
+        self.expense_table.setHorizontalHeaderLabels(['ID', 'Amount', 'Description', 'Date', 'Category'])
+        self.expense_table.horizontalHeader().setStretchLastSection(True)
+        self.expense_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        self.expense_table.setStyleSheet("""
+            QTableWidget {
+                border: 1px solid #BDC3C7;
+                border-radius: 5px;
+                font-size: 14px;
+                background-color: #FFFFFF;
+                color: #2C3E50;
+            }
+            QHeaderView::section {
+                background-color: #ECF0F1;
+                color: #2C3E50;
+                border: 1px solid #BDC3C7;
+            }
+        """)
+        layout.addWidget(self.expense_table)
+
+        # Central widget setup
         central_widget = QWidget()
         central_widget.setLayout(layout)
+        central_widget.setStyleSheet("""
+            QWidget {
+                background-color: #ECF0F1;
+            }
+        """)
         self.setCentralWidget(central_widget)
 
     def load_expenses(self):
@@ -188,20 +281,22 @@ class History(QMainWindow):
 
             if not expenses:
                 QMessageBox.information(self, "No Data", "No expenses found for the selected date range.")
-                self.expense_display.clear()
+                self.expense_table.setRowCount(0)  # Clear the table
                 return
 
-            # Display the expenses in the text area
-            self.expense_display.clear()
-            self.expense_display.append(f"{'ID':<10}{'Amount':<15}{'Description':<20}{'Date':<15}{'Category'}")
-            self.expense_display.append("="*65)
-            for expense in expenses:
+            # Set the number of rows in the table
+            self.expense_table.setRowCount(len(expenses))
+
+            # Populate the table with data
+            for row, expense in enumerate(expenses):
                 if len(expense) == 5:
-                    self.expense_display.append(f"{expense[0]:<10}{expense[1]:<15}{expense[2]:<20}{expense[3]:<15}{expense[4]}")
+                    for col, data in enumerate(expense):
+                        item = QTableWidgetItem(str(data))
+                        self.expense_table.setItem(row, col, item)
                 else:
                     QMessageBox.warning(self, "Data Error", "Unexpected data format found in expenses.")
                     break
-                
+
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
         
@@ -217,16 +312,24 @@ class AddExpenseWindow(QMainWindow):
 
         layout = QVBoxLayout()
 
+        # Font settings for labels and buttons
+        title_font = QFont("Open Sans", 14, QFont.Weight.Bold)  # QFont.Bold is the correct constant for bold text
+        button_font = QFont("Verdana", 12)
+
         # Horizontal layout for Add and Delete buttons
         button_layout = QHBoxLayout()
-        
+
         # Add Expense button
         self.add_expense_button = QPushButton("Add Expense")
+        self.add_expense_button.setFont(button_font)
+        self.add_expense_button.setStyleSheet("background-color: #4CAF50; color: white; padding: 10px;")
         self.add_expense_button.clicked.connect(self.show_add_expense_form)
         button_layout.addWidget(self.add_expense_button)
 
         # Delete Expense button
         self.delete_expense_button = QPushButton("Delete Expense")
+        self.delete_expense_button.setFont(button_font)
+        self.delete_expense_button.setStyleSheet("background-color: #F44336; color: white; padding: 10px;")
         self.delete_expense_button.clicked.connect(self.show_delete_expense_form)
         button_layout.addWidget(self.delete_expense_button)
 
@@ -237,28 +340,38 @@ class AddExpenseWindow(QMainWindow):
         add_expense_layout = QVBoxLayout()
 
         amount_label = QLabel("Amount:")
+        amount_label.setFont(title_font)
         add_expense_layout.addWidget(amount_label)
         self.amount_input = QLineEdit()
+        self.amount_input.setStyleSheet("border: 1px solid #2196F3; padding: 5px;")
         add_expense_layout.addWidget(self.amount_input)
 
         description_label = QLabel("Description:")
+        description_label.setFont(title_font)
         add_expense_layout.addWidget(description_label)
         self.description_input = QLineEdit()
+        self.description_input.setStyleSheet("border: 1px solid #2196F3; padding: 5px;")
         add_expense_layout.addWidget(self.description_input)
 
         category_label = QLabel("Category:")
+        category_label.setFont(title_font)
         self.category_dropdown = QComboBox()
         self.category_dropdown.addItems(["Food", "Transport", "Entertainment", "Utilities", "Others"])
+        self.category_dropdown.setStyleSheet("border: 1px solid #2196F3; padding: 5px;")
         add_expense_layout.addWidget(category_label)
         add_expense_layout.addWidget(self.category_dropdown)
 
         date_label = QLabel("Date:")
+        date_label.setFont(title_font)
         self.date_input = QDateEdit()
         self.date_input.setDate(QDate.currentDate())
+        self.date_input.setStyleSheet("border: 1px solid #2196F3; padding: 5px;")
         add_expense_layout.addWidget(date_label)
         add_expense_layout.addWidget(self.date_input)
 
         submit_button = QPushButton("Submit Expense")
+        submit_button.setFont(button_font)
+        submit_button.setStyleSheet("background-color: #2196F3; color: white; padding: 10px;")
         submit_button.clicked.connect(self.add_expense_to_db)
         add_expense_layout.addWidget(submit_button)
 
@@ -271,25 +384,34 @@ class AddExpenseWindow(QMainWindow):
         delete_expense_layout = QVBoxLayout()
 
         date_label = QLabel("Select Date:")
+        date_label.setFont(title_font)
         delete_expense_layout.addWidget(date_label)
         self.date_input_delete = QDateEdit()
         self.date_input_delete.setDate(QDate.currentDate())
+        self.date_input_delete.setStyleSheet("border: 1px solid #F44336; padding: 5px;")
         delete_expense_layout.addWidget(self.date_input_delete)
 
         load_button = QPushButton("Load Expenses")
+        load_button.setFont(button_font)
+        load_button.setStyleSheet("background-color: #FF9800; color: white; padding: 10px;")
         load_button.clicked.connect(self.load_expenses)
         delete_expense_layout.addWidget(load_button)
 
         self.expense_display = QTextEdit()
+        self.expense_display.setStyleSheet("border: 1px solid #F44336; padding: 5px;")
         self.expense_display.setReadOnly(True)
         delete_expense_layout.addWidget(self.expense_display)
 
         id_label = QLabel("Enter ID of the expense to delete:")
+        id_label.setFont(title_font)
         delete_expense_layout.addWidget(id_label)
         self.id_input = QLineEdit()
+        self.id_input.setStyleSheet("border: 1px solid #F44336; padding: 5px;")
         delete_expense_layout.addWidget(self.id_input)
 
         delete_button = QPushButton("Delete Selected Expense")
+        delete_button.setFont(button_font)
+        delete_button.setStyleSheet("background-color: #F44336; color: white; padding: 10px;")
         delete_button.clicked.connect(self.delete_expense)
         delete_expense_layout.addWidget(delete_button)
 
@@ -485,6 +607,51 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Login & Registration")
         self.setGeometry(100, 100, 400, 300)
+        self.setStyleSheet("""
+            QMainWindow {
+                background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #89CFF0, stop:1 #006994);
+            }
+            QLabel {
+                color: white;
+                font-family: 'Roboto', sans-serif;
+                font-size: 16px;
+            }
+            QLineEdit {
+                padding: 10px;
+                border: 2px solid #ccc;
+                border-radius: 10px;
+                background-color: rgba(255, 255, 255, 0.8);
+                color: #333;
+            }
+            QPushButton {
+                padding: 10px;
+                background-color: #007BFF;
+                color: white;
+                border-radius: 10px;
+                font-family: 'Roboto', sans-serif;
+                font-size: 14px;
+                box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+                transition: background-color 0.3s ease, transform 0.3s ease;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
+            QPushButton:pressed {
+                background-color: #003d7a;
+                transform: scale(1.0);
+            }
+            QPushButton#linkButton {
+                color: #F0E68C;
+                background: transparent;
+                border: none;
+                font-size: 12px;
+                text-decoration: underline;
+            }
+            QPushButton#linkButton:hover {
+                color: #FFD700;
+            }
+        """)
         self.connection = DatabaseConnection()
         self.db = User(self.connection)
 
@@ -505,11 +672,11 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         title_label = QLabel("Login")
-        title_label.setFont(QFont('Arial', 18))
+        title_label.setFont(QFont('Roboto', 18))
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
 
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         username_label = QLabel("Username:")
         layout.addWidget(username_label)
@@ -524,11 +691,14 @@ class MainWindow(QMainWindow):
         self.password_login_input.setEchoMode(QLineEdit.EchoMode.Password)
         layout.addWidget(self.password_login_input)
 
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+
         login_button = QPushButton("Login")
         login_button.clicked.connect(self.login)
         layout.addWidget(login_button)
 
         register_link = QPushButton("No account? Register here.")
+        register_link.setObjectName("linkButton")
         register_link.clicked.connect(self.show_register_page)
         layout.addWidget(register_link)
 
@@ -541,11 +711,11 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         title_label = QLabel("Register")
-        title_label.setFont(QFont('Arial', 18))
+        title_label.setFont(QFont('Roboto', 18))
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
 
-        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+        layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         username_label = QLabel("Username:")
         layout.addWidget(username_label)
@@ -560,11 +730,14 @@ class MainWindow(QMainWindow):
         self.password_register_input.setEchoMode(QLineEdit.EchoMode.Password)
         layout.addWidget(self.password_register_input)
 
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+
         register_button = QPushButton("Register")
         register_button.clicked.connect(self.register)
         layout.addWidget(register_button)
 
         login_link = QPushButton("Already have an account? Login here.")
+        login_link.setObjectName("linkButton")
         login_link.clicked.connect(self.show_login_page)
         layout.addWidget(login_link)
 
@@ -606,8 +779,74 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         self.db.db_connection.close()
 
+class HomePageWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Personal Income & Spending Analyzer")
+        self.setGeometry(100, 100, 600, 400)
+        self.init_ui()
+
+    def init_ui(self):
+        # Set up layout
+        self.layout = QVBoxLayout()
+        
+        # Project title
+        title_label = QLabel("Welcome to Your Financial Planner")
+        title_label.setFont(QFont('Montserrat', 26, QFont.Weight.Bold))
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title_label.setStyleSheet("color: #2C3E50; padding: 10px;")
+        self.layout.addWidget(title_label)
+
+        # About the project
+        description_label = QLabel("Manage your income, track expenses, and unlock smart financial insights with our cutting-edge machine learning algorithms. "
+                                   "Take the first step towards smarter financial decisions and a brighter financial future.")
+        description_label.setWordWrap(True)
+        description_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        description_label.setFont(QFont('Open Sans', 14))
+        description_label.setStyleSheet("color: #34495E; padding: 20px;")
+        self.layout.addWidget(description_label)
+
+        # Spacer to center content
+        self.layout.addSpacerItem(QSpacerItem(20, 60, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
+
+        # Button to navigate to login
+        login_button = QPushButton("Start Managing Your Finances")
+        login_button.setFont(QFont('Montserrat', 16, QFont.Weight.Medium))
+        login_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        login_button.setStyleSheet("""
+            QPushButton {
+                padding: 15px 30px;
+                background-color: #1ABC9C;
+                color: white;
+                border-radius: 10px;
+                font-size: 16px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+            QPushButton:hover {
+                background-color: #16A085;
+            }
+        """)
+        login_button.clicked.connect(self.go_to_login)
+        self.layout.addWidget(login_button, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        # Set layout and background
+        central_widget = QWidget()
+        central_widget.setLayout(self.layout)
+        central_widget.setStyleSheet("""
+            QWidget {
+                background-color: #ECF0F1;
+            }
+        """)
+        self.setCentralWidget(central_widget)
+
+    def go_to_login(self):
+        self.login_window = MainWindow()
+        self.login_window.show()
+        self.close()
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    home_page = HomePageWindow()
+    home_page.show()
     sys.exit(app.exec())
