@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QTableWidget,QDialog, QPushButton, QMessageBox, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QWidget, QComboBox, QDateEdit
+    QApplication, QMainWindow,QTextEdit, QTableWidgetItem,QTableWidget,QDialog, QPushButton, QMessageBox, QLabel, QLineEdit, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy, QWidget, QComboBox, QDateEdit
 )
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt, QDate
@@ -78,62 +78,169 @@ class AddIncomeWindow(QMainWindow):
         self.Main_window.show()
         self.close()
 
-
-class deleteexpense(QDialog):
-    def __init__(self,user_id):
+class History(QMainWindow):
+    def __init__(self ,user_id, username):
         super().__init__()
         self.user_id = user_id
-        self.setWindowTitle("Delete Expense")
-        self.resize(400, 300)
+        self.username = username
+        self.addexpense = AddExpense()  # Initialize AddExpense class
+
+        self.setWindowTitle("Expense History")
+        self.setGeometry(100, 100, 600, 400)
+
         layout = QVBoxLayout()
 
-        self.date_edit = QDateEdit(self)
-        self.date_edit.setCalendarPopup(True)
-        self.date_edit.setDate(QDate.currentDate())
-        layout.addWidget(self.date_edit)
+        # Start Date
+        start_date_label = QLabel("Start Date:")
+        layout.addWidget(start_date_label)
+        self.start_date_input = QDateEdit()
+        self.start_date_input.setDate(QDate.currentDate())
+        layout.addWidget(self.start_date_input)
 
-        self.table = QTableWidget(self)
-        layout.addWidget(self.table)
+        # End Date
+        end_date_label = QLabel("End Date:")
+        layout.addWidget(end_date_label)
+        self.end_date_input = QDateEdit()
+        self.end_date_input.setDate(QDate.currentDate())
+        layout.addWidget(self.end_date_input)
 
-        self.show_expenses_button = QPushButton("Show Expenses", self)
-        self.show_expenses_button.clicked.connect(self.show_expenses)
-        layout.addWidget(self.show_expenses_button)
+        # Show Transactions button
+        show_button = QPushButton("Show Transactions")
+        show_button.clicked.connect(self.load_expenses)
+        layout.addWidget(show_button)
+        
+        return_button = QPushButton("Return to Home page")
+        return_button.clicked.connect(self.return_to_welcome)
+        layout.addWidget(return_button)
+        
+        # Display area for expenses
+        self.expense_display = QTextEdit()
+        self.expense_display.setReadOnly(True)
+        layout.addWidget(self.expense_display)
 
-        self.delete_button = QPushButton("Delete Selected Expense", self)
-        self.delete_button.clicked.connect(self.delete_selected_expense)
-        layout.addWidget(self.delete_button)
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
 
-        self.setLayout(layout)
+    def load_expenses(self):
+        start_date = self.start_date_input.date().toString('yyyy-MM-dd')
+        end_date = self.end_date_input.date().toString('yyyy-MM-dd')
 
-    def show_expenses(self):
-        date = self.date_edit.date().toString("yyyy-MM-dd")
-        expenses = AddExpense(self.db_connection).get_expenses_by_date(self.user_id, date)
+        # Fetch expenses from backend
+        try:
+            expenses = self.addexpense.fetch_between_date(self.user_id, start_date, end_date)
 
-        self.table.setRowCount(len(expenses))
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["ID", "Amount", "Description", "Date", "Category"])
+            if not expenses:
+                QMessageBox.information(self, "No Data", "No expenses found for the selected date range.")
+                self.expense_display.clear()
+                return
 
-        for row, expense in enumerate(expenses):
-            for col, data in enumerate(expense):
-                self.table.setItem(row, col, QTableWidgetItem(str(data)))
+            # Display the expenses in the text area
+            self.expense_display.clear()
+            self.expense_display.append(f"{'ID':<10}{'Amount':<15}{'Description':<20}{'Date':<15}{'Category'}")
+            self.expense_display.append("="*65)
+            for expense in expenses:
+                if len(expense) == 5:
+                    self.expense_display.append(f"{expense[0]:<10}{expense[1]:<15}{expense[2]:<20}{expense[3]:<15}{expense[4]}")
+                else:
+                    QMessageBox.warning(self, "Data Error", "Unexpected data format found in expenses.")
+                    break
+                
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+        
+    def return_to_welcome(self):
+        self.Main_window = WelcomeWindow(self.username)
+        self.Main_window.show()
+        self.close()
+        
+class DeleteExpenseWindow(QMainWindow):
+    def __init__(self, user_id ,username):
+        super().__init__()
+        self.user_id = user_id
+        self.addexpense = AddExpense()
+        self.username = username
+        self.setWindowTitle("Delete Expense")
+        self.setGeometry(100, 100, 600, 400)
 
-    def delete_selected_expense(self):
-        selected_row = self.table.currentRow()
-        if selected_row == -1:
-            QMessageBox.warning(self, "Error", "Please select a row to delete")
+        layout = QVBoxLayout()
+
+        # Date input
+        date_label = QLabel("Select Date:")
+        layout.addWidget(date_label)
+        self.date_input = QDateEdit()
+        self.date_input.setDate(QDate.currentDate())
+        layout.addWidget(self.date_input)
+
+        # Button to load expenses
+        load_button = QPushButton("Load Expenses")
+        load_button.clicked.connect(self.load_expenses)
+        layout.addWidget(load_button)
+
+        # Text area to display expenses
+        self.expense_display = QTextEdit()
+        self.expense_display.setReadOnly(True)
+        layout.addWidget(self.expense_display)
+
+        # Input to enter the ID for deletion
+        id_label = QLabel("Enter ID of the expense to delete:")
+        layout.addWidget(id_label)
+        self.id_input = QLineEdit()
+        layout.addWidget(self.id_input)
+
+        # Delete button
+        delete_button = QPushButton("Delete Selected Expense")
+        delete_button.clicked.connect(self.delete_expense)
+        layout.addWidget(delete_button)
+        
+        return_button = QPushButton("Return to Add Expense page")
+        return_button.clicked.connect(self.return_to_expense)
+        layout.addWidget(return_button)
+        
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+    def load_expenses(self):
+        date = self.date_input.date().toString('yyyy-MM-dd')
+        expenses = self.addexpense.fetch_by_date(self.user_id, date)
+
+        if not expenses:
+            QMessageBox.information(self, "No Data", "No expenses found for the selected date.")
+            self.expense_display.clear()
             return
 
-        expense_id = self.table.item(selected_row, 0).text()  # Get the ID from the first column
+        # Display the expenses in the text area
+        self.expense_display.clear()
+        self.expense_display.append(f"{'ID':<10}{'Amount':<15}{'Description':<20}{'Date':<15}{'Category'}")
+        self.expense_display.append("="*65)
+        for expense in expenses:
+            self.expense_display.append(f"{expense[0]:<10}{expense[1]:<15}{expense[2]:<20}{expense[3]:<15}{expense[4]}")
 
-        # Confirm the delete action
-        confirm = QMessageBox.question(self, "Confirm Delete", "Are you sure you want to delete this expense?",
-                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    def delete_expense(self):
+        expense_id = self.id_input.text()
 
-        if confirm == QMessageBox.StandardButton.Yes:
-            AddExpense(self.db_connection).delete_expense(expense_id)
-            QMessageBox.information(self, "Success", "Expense deleted successfully!")
-            self.show_expenses()
-            
+        if not expense_id:
+            QMessageBox.warning(self, "Input Error", "Please enter the ID of the expense to delete.")
+            return
+
+        confirmation = QMessageBox.question(self,"Confirm Delete",f"Are you sure you want to delete expense ID {expense_id}?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if confirmation == QMessageBox.StandardButton.Yes:
+            try:
+                self.addexpense.delete(expense_id)
+                QMessageBox.information(self, "Success", f"Expense ID {expense_id} deleted successfully.")
+                self.load_expenses()  # Refresh the displayed expenses after deletion
+            except Exception as e:
+                QMessageBox.critical(self, "Database Error", str(e))
+
+    def return_to_expense(self):
+        self.Main_window = AddExpenseWindow(self.user_id,self.username)
+        self.Main_window.show()
+        self.close()
+                
 class AddExpenseWindow(QDialog):
     def __init__(self, user_id ,username):
         super().__init__()
@@ -204,13 +311,14 @@ class AddExpenseWindow(QDialog):
             QMessageBox.critical(self, "Database Error", str(e))
     
     def go_to_deleteexpense(self):
-        self.delete_expense_window = deleteexpense(self.user_id)
+        self.delete_expense_window = DeleteExpenseWindow(self.user_id ,self.username)
         self.delete_expense_window.show()
         self.close()
         
     def return_to_welcome(self):
         self.Main_window = WelcomeWindow(self.username)
         self.Main_window.show()
+        self.close()
         
 class WelcomeWindow(QMainWindow):
     def __init__(self, username):
@@ -243,6 +351,7 @@ class WelcomeWindow(QMainWindow):
         layout.addWidget(add_income_button)
 
         see_history_button = QPushButton("See History")
+        see_history_button.clicked.connect(self.show_history)
         layout.addWidget(see_history_button)
 
         central_widget = QWidget()
@@ -258,6 +367,11 @@ class WelcomeWindow(QMainWindow):
         self.income_window = AddIncomeWindow(self.user_id,self.username)
         self.income_window.show()
         self.close()
+        
+    def show_history(self):
+        self.history_window = History(self.user_id,self.username)
+        self.history_window.show()
+        self.close
 
 class MainWindow(QMainWindow):
     def __init__(self):

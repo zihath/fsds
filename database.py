@@ -83,15 +83,23 @@ class AddExpense:
             (user_id, amount, description, date, category)
         )
         self.db_connection.conn.commit()
-        
-    def get_expenses_by_date(self, user_id, date):
+    
+    def fetch_by_date(self, user_id, date):
         self.db_connection.cur.execute(
-            "SELECT id, amount, description, date, category FROM expenses WHERE user_id = ? AND date = ?",
+            "SELECT date, amount, description, category FROM expenses WHERE user_id = ? AND date = ?",
             (user_id, date)
         )
         return self.db_connection.cur.fetchall()
+        
+    def fetch_between_date(self, user_id, start_date, end_date):
+        self.db_connection.cur.execute(
+            "SELECT id, amount, description, date, category FROM expenses WHERE user_id = ? AND date BETWEEN ? AND ?",
+            (user_id, start_date, end_date)
+        )
+        return self.db_connection.cur.fetchall()
 
-    def delete_expense(self, expense_id):
+
+    def delete(self, expense_id):
         self.db_connection.cur.execute(
             "DELETE FROM expenses WHERE id = ?",
             (expense_id,)
