@@ -118,6 +118,7 @@ class AddIncome:
                 VALUES (?, ?, ?, ?)
             ''', (user_id, amount, source, date))
             self.db_connection.conn.commit()
+            
         except sqlite3.OperationalError as e:
             print(f"Error while inserting income: {e}")
             
